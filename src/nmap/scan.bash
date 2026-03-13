@@ -2,10 +2,10 @@
 nmap_scan_quick() {
     _grim_command_requires nmap || return 1
     
-    _grim_command_init target
-    _grim_command_parse "$@"
+    _grim_command_param_init target
+    _grim_command_param_parse "$@"
 
-    _grim_command_validate target --required || return 1
+    _grim_command_param_validate target --required || return 1
 
     local cmd=(nmap -T4 --top-ports 1000 "$target")
     
@@ -17,10 +17,10 @@ nmap_scan_quick() {
 nmap_scan_full() {
     _grim_command_requires nmap || return 1
     
-    _grim_command_init target
-    _grim_command_parse "$@"
+    _grim_command_param_init target
+    _grim_command_param_parse "$@"
 
-    _grim_command_validate target --required || return 1
+    _grim_command_param_validate target --required || return 1
 
     local cmd=(nmap -T4 -p- "$target")
     
@@ -32,10 +32,10 @@ nmap_scan_full() {
 nmap_scan_services() {
     _grim_command_requires nmap || return 1
     
-    _grim_command_init target ports
-    _grim_command_parse "$@"
+    _grim_command_param_init target ports
+    _grim_command_param_parse "$@"
 
-    _grim_command_validate target --required || return 1
+    _grim_command_param_validate target --required || return 1
 
     local cmd=(nmap -sV -sC "$target")
     [[ -n "$ports" ]] && cmd+=(-p "$ports")
@@ -48,10 +48,10 @@ nmap_scan_services() {
 nmap_scan_os() {
     _grim_command_requires nmap || return 1
     
-    _grim_command_init target
-    _grim_command_parse "$@"
+    _grim_command_param_init target
+    _grim_command_param_parse "$@"
 
-    _grim_command_validate target --required || return 1
+    _grim_command_param_validate target --required || return 1
 
     local cmd=(sudo nmap -O "$target")
     
@@ -63,10 +63,10 @@ nmap_scan_os() {
 nmap_scan_discover() {
     _grim_command_requires nmap || return 1
     
-    _grim_command_init subnet
-    _grim_command_parse "$@"
+    _grim_command_param_init subnet
+    _grim_command_param_parse "$@"
 
-    _grim_command_validate subnet --required || return 1
+    _grim_command_param_validate subnet --required || return 1
 
     local cmd=(nmap -sn "$subnet")
     
@@ -78,10 +78,10 @@ nmap_scan_discover() {
 nmap_scan_stealth() {
     _grim_command_requires nmap || return 1
     
-    _grim_command_init target ports
-    _grim_command_parse "$@"
+    _grim_command_param_init target ports
+    _grim_command_param_parse "$@"
 
-    _grim_command_validate target --required || return 1
+    _grim_command_param_validate target --required || return 1
 
     local cmd=(sudo nmap -sS -T2 "$target")
     [[ -n "$ports" ]] && cmd+=(-p "$ports")
@@ -94,10 +94,10 @@ nmap_scan_stealth() {
 nmap_scan_udp() {
     _grim_command_requires nmap || return 1
     
-    _grim_command_init target ports=53,67,68,69,123,161,162,500,514,1900
-    _grim_command_parse "$@"
+    _grim_command_param_init target ports=53,67,68,69,123,161,162,500,514,1900
+    _grim_command_param_parse "$@"
 
-    _grim_command_validate target --required || return 1
+    _grim_command_param_validate target --required || return 1
 
     local cmd=(sudo nmap -sU -p "$ports" "$target")
     
@@ -120,13 +120,13 @@ _complete_targets() {
         fi
     fi
 }
-_grim_command_set_completer "nmap_scan_full" "target" _complete_targets
+_grim_command_complete_func "nmap_scan_full" "target" _complete_targets
 
 # Register parameters
-_grim_command_set_params "nmap_scan_quick" "target"
-_grim_command_set_params "nmap_scan_full" "target"
-_grim_command_set_params "nmap_scan_services" "target" "ports"
-_grim_command_set_params "nmap_scan_os" "target"
-_grim_command_set_params "nmap_scan_discover" "subnet"
-_grim_command_set_params "nmap_scan_stealth" "target" "ports"
-_grim_command_set_params "nmap_scan_udp" "target" "ports"
+_grim_command_complete_params "nmap_scan_quick" "target"
+_grim_command_complete_params "nmap_scan_full" "target"
+_grim_command_complete_params "nmap_scan_services" "target" "ports"
+_grim_command_complete_params "nmap_scan_os" "target"
+_grim_command_complete_params "nmap_scan_discover" "subnet"
+_grim_command_complete_params "nmap_scan_stealth" "target" "ports"
+_grim_command_complete_params "nmap_scan_udp" "target" "ports"

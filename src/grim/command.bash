@@ -5,8 +5,8 @@ declare -gA _GRIM_COMMAND_PARAMS
 declare -gA _GRIM_COMMAND_FLAGS
 
 # Filter and return completion items for a given prefix
-# Usage: _grim_command_filter "sub1 sub2 sub3" "s"
-_grim_command_filter() {
+# Usage: _grim_command_complete_filter "sub1 sub2 sub3" "s"
+_grim_command_complete_filter() {
     local items="$1"
     local cur="$2"
     compgen -W "$items" -- "$cur"
@@ -30,10 +30,10 @@ _grim_command_requires() {
 }
 
 # Declare parameters and optional defaults for the calling function
-# Usage: _grim_command_init env=dev region=us-east-1 subscription
+# Usage: _grim_command_param_init env=dev region=us-east-1 subscription
 #        Sets env and region with defaults, subscription without default
 #        Automatically includes output_format=table for all commands
-_grim_command_init() {
+_grim_command_param_init() {
     local func="${FUNCNAME[1]}"
     local param
     
@@ -59,9 +59,9 @@ _grim_command_init() {
 }
 
 # Set default value for a parameter
-# Usage: _grim_command_default env "dev"
-#        _grim_command_default region "us-east-1"
-_grim_command_default() {
+# Usage: _grim_command_param_default env "dev"
+#        _grim_command_param_default region "us-east-1"
+_grim_command_param_default() {
     local func="${FUNCNAME[1]}"
     local param="$1"
     local default_value="$2"
@@ -76,9 +76,9 @@ _grim_command_default() {
 }
 
 # Parse command-line arguments into variables
-# Usage: _grim_command_parse "$@"
+# Usage: _grim_command_param_parse "$@"
 #        Now $foo, $bar, $baz are available as local variables
-_grim_command_parse() {
+_grim_command_param_parse() {
     local func="${FUNCNAME[1]}"
     local -A flags
     local -a args
@@ -109,9 +109,9 @@ _grim_command_parse() {
 }
 
 # Validate a parameter with rules
-# Usage: _grim_command_validate sub --required
-#        _grim_command_validate env --required --regex "^(dev|prod)$"
-_grim_command_validate() {
+# Usage: _grim_command_param_validate sub --required
+#        _grim_command_param_validate env --required --regex "^(dev|prod)$"
+_grim_command_param_validate() {
     local func="${FUNCNAME[1]}"
     local param="$1"
     shift
@@ -174,8 +174,8 @@ _grim_command_validate() {
 }
 
 # Register parameters for a function
-# Usage: _grim_command_set_params "my_func" "target" "ports" "output"
-_grim_command_set_params() {
+# Usage: _grim_command_complete_params "my_func" "target" "ports" "output"
+_grim_command_complete_params() {
     local func="$1"
     shift
     
@@ -193,14 +193,14 @@ _grim_command_set_params() {
     
     # Register completion handler if not already done
     if ! complete -p "$func" &>/dev/null; then
-        complete -o bashdefault -o default -o nospace -F _grim_command_dispatcher_complete "$func"
+        complete -o bashdefault -o default -o nospace -F _grim_command_complete_dispatch "$func"
     fi
 }
 
 # Set value completions for a parameter
-# Usage: _grim_command_set_values "my_func" "output_format" "json" "table" "csv"
-#        _grim_command_set_values "my_func" "env" "dev" "staging" "prod"
-_grim_command_set_values() {
+# Usage: _grim_command_complete_values "my_func" "output_format" "json" "table" "csv"
+#        _grim_command_complete_values "my_func" "env" "dev" "staging" "prod"
+_grim_command_complete_values() {
     local func="$1"
     local param="$2"
     shift 2
@@ -214,8 +214,8 @@ _grim_command_set_values() {
 
 # Set a function as completer for a parameter
 # The function should output completions one per line
-# Usage: _grim_command_set_completer "my_func" "target" my_target_generator
-_grim_command_set_completer() {
+# Usage: _grim_command_complete_func "my_func" "target" my_target_generator
+_grim_command_complete_func() {
     local func="$1"
     local param="$2"
     local completer_func="$3"
@@ -224,15 +224,8 @@ _grim_command_set_completer() {
     _GRIM_COMMAND_COMPLETER_FUNCS["${func}:${param_flag}"]="$completer_func"
 }
 
-# Legacy compatibility wrapper
-_grim_command_set_complete() {
-    local func="$1"
-    shift
-    _grim_command_set_params "$func" "$@"
-}
-
 # Internal dispatcher for all completions
-_grim_command_dispatcher_complete() {
+_grim_command_complete_dispatch() {
     local func="${COMP_WORDS[0]}"
     local cur="${COMP_WORDS[COMP_CWORD]}"
     local prev="${COMP_WORDS[COMP_CWORD-1]}"

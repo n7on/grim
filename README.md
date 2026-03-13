@@ -17,21 +17,21 @@ _greet_user_completer() {
 }
 
 greet() {
-    _grim_command_init name greeting="Hello"
-    _grim_command_parse "$@"
-    _grim_command_validate name --required || return 1
+    _grim_command_param_init name greeting="Hello"
+    _grim_command_param_parse "$@"
+    _grim_command_param_validate name --required || return 1
     _grim_command_output_set "greeting,name" '{print greeting "\t" name}'
     _grim_command_run printf "%s\t%s\n" "$greeting" "$name" | _grim_command_output_render
 }
 
 # Register parameters and completions
-_grim_command_set_params greet name greeting
-_grim_command_set_completer greet name _greet_user_completer
-_grim_command_set_values greet greeting Hello Hi Hey
+_grim_command_complete_params greet name greeting
+_grim_command_complete_func greet name _greet_user_completer
+_grim_command_complete_values greet greeting Hello Hi Hey
 
 # (Optional) You always get --output_format and --dry_run for free
-# _grim_command_set_values greet output_format table json csv
-# _grim_command_set_values greet dry_run true false
+# _grim_command_complete_values greet output_format table json csv
+# _grim_command_complete_values greet dry_run true false
 ```
 
 **Usage:**
@@ -50,14 +50,14 @@ greet --dry_run true              # dry run mode
 ## Core Functions
 
 **Parameters & Registration:**
-- `_grim_command_init param1 param2=default` — Declare parameters (adds output_format, dry_run by default)
-- `_grim_command_parse "$@"` — Parse arguments into variables
-- `_grim_command_set_params func param1 param2 ...` — Register parameters for completion
-- `_grim_command_set_values func param value1 value2 ...` — Static completions
-- `_grim_command_set_completer func param completer_func` — Function completions
-- `_grim_command_validate param --required --regex "pattern" --path [file|dir]` — Validate
+- `_grim_command_param_init param1 param2=default` — Declare parameters (adds output_format, dry_run by default)
+- `_grim_command_param_parse "$@"` — Parse arguments into variables
+- `_grim_command_complete_params func param1 param2 ...` — Register parameters for completion
+- `_grim_command_complete_values func param value1 value2 ...` — Static completions
+- `_grim_command_complete_func func param completer_func` — Function completions
+- `_grim_command_param_validate param --required --regex "pattern" --path [file|dir]` — Validate
 - `_grim_command_requires jq az` — Check dependencies exist
-- `_grim_command_filter "item1 item2" "$prefix"` — Filter completion items
+- `_grim_command_complete_filter "item1 item2" "$prefix"` — Filter completion items
 
 **Messages:**
 - `_grim_log_warn "message"`

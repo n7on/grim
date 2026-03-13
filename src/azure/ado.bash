@@ -4,14 +4,14 @@ _azure_ado_app_id="499b84ac-1321-427f-aa17-267ca6975798"
 azure_ado_download_latest_feed_package() {
     _grim_command_requires jq az || return 1
     
-    _grim_command_init \
+    _grim_command_param_init \
         package \
         path=. \
         feed="$AZURE_DEVOPS_FEED_NAME" \
         organization="$AZURE_DEVOPS_ORGANIZATION"
-    _grim_command_parse "$@"
+    _grim_command_param_parse "$@"
     
-    _grim_command_validate package --required || return 1
+    _grim_command_param_validate package --required || return 1
 
     local url="https://feeds.dev.azure.com/$organization/_apis/packaging/feeds/$feed/packages?packageNameQuery=$package&protocolType=upack&api-version=7.1-preview.1"
     local pkg
@@ -33,4 +33,4 @@ azure_ado_download_latest_feed_package() {
 }
 
 # Register parameters
-_grim_command_set_params "azure_ado_download_latest_feed_package" "package" "path" "feed" "organization"
+_grim_command_complete_params "azure_ado_download_latest_feed_package" "package" "path" "feed" "organization"

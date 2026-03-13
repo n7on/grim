@@ -5,10 +5,10 @@
 openssl_client_connect() {
     _grim_command_requires openssl || return 1
 
-    _grim_command_init host port=443 message="" output_format=raw
-    _grim_command_parse "$@"
+    _grim_command_param_init host port=443 message="" output_format=raw
+    _grim_command_param_parse "$@"
 
-    _grim_command_validate host --required || return 1
+    _grim_command_param_validate host --required || return 1
 
     local cmd=(openssl s_client -connect "${host}:${port}")
 
@@ -16,7 +16,7 @@ openssl_client_connect() {
     echo -e "${message}" | _grim_command_run "${cmd[@]}" | _grim_command_output_render
 }
 
-_grim_command_set_params "openssl_client_connect" "host" "port" "message"
+_grim_command_complete_params "openssl_client_connect" "host" "port" "message"
 
 _complete_openssl_messages() {
     echo '"QUIT"'
@@ -24,7 +24,7 @@ _complete_openssl_messages() {
     echo '"EHLO test"'
     echo '"GET / HTTP/1.1\r\n"'
 }
-_grim_command_set_completer "openssl_client_connect" "message" _complete_openssl_messages
+_grim_command_complete_func "openssl_client_connect" "message" _complete_openssl_messages
 
-_grim_command_set_values "openssl_client_connect" "port" \
+_grim_command_complete_values "openssl_client_connect" "port" \
     "443" "8443" "587" "465" "993" "995" "636" "853" "5223" "8080"

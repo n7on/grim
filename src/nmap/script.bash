@@ -2,11 +2,11 @@
 nmap_script_run() {
     _grim_command_requires nmap || return 1
     
-    _grim_command_init target script ports
-    _grim_command_parse "$@"
+    _grim_command_param_init target script ports
+    _grim_command_param_parse "$@"
 
-    _grim_command_validate target --required || return 1
-    _grim_command_validate script --required || return 1
+    _grim_command_param_validate target --required || return 1
+    _grim_command_param_validate script --required || return 1
 
     local cmd=(nmap --script="$script" "$target")
     [[ -n "$ports" ]] && cmd+=(-p "$ports")
@@ -16,4 +16,4 @@ nmap_script_run() {
 }
 
 # Register parameters
-_grim_command_set_params "nmap_script_run" "target" "script" "ports"
+_grim_command_complete_params "nmap_script_run" "target" "script" "ports"
